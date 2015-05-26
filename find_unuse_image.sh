@@ -36,16 +36,25 @@ else
 	echo `ls -lR ${moveto_path}| grep "^-" | wc -l`
 fi
 
+
+oldname=''
 for name in `ls -R ${source_path}`
 do
   if [[ $name == *: ]]; then
   	path="${name//:/}"
   elif [[ $name == *.png ]]; then
   	f="${name//.png/}"
-  	f="${f//@2x/}"
-  	f="${f//@2X/}"
-	# echo "find ${work_path} -regex '.*.[{plist}|{xib}|{m}]$' -type f|xargs grep -ri ${f} -l"
-	array=($(find ${work_path} -regex '.*.[{plist}|{xib}|{m}]$' -type f|xargs grep -ri ${f} -l))
+  	f="${f//@[2,3][x,X]/}"
+  	f="${f/[0-9]*/}"
+  	if [[ $f == $oldname ]]; then
+  		#echo "ignore and continue"
+  		continue
+  	fi
+	oldname=$f
+	#echo "find ${work_path} -regex '.*.[{plist}|{xib}|{m}]$' -type f|xargs grep -ri ${f} -l"
+	#continue
+
+	array=($(find ${work_path} -regex '.*.[{h}{plist}|{xib}|{m}]$' -type f|xargs grep -ri ${f} -l))
 	# printf "%s\n\t%s\x00\n" "$name" "${array[@]}"
 	if [[ ${#array[@]} == 0 ]]; then
 		# echo $name
